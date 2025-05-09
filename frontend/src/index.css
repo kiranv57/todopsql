@@ -118,3 +118,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Add this to your global CSS file */
+body {
+  @apply bg-gray-100;
+}
+
+.sidebar {
+  @apply w-64 bg-white shadow-md p-4 rounded-lg;
+}
+
+.main-content {
+  @apply flex-1 p-6;
+}

@@ -1,0 +1,34 @@
+datasource db {
+  provider = "postgresql"  // or mysql, sqlite, etc.
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client" 
+}
+
+model Todo {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  authorId    Int      // Foreign key to the User model
+  author      User     @relation(fields: [authorId], references: [id]) // Relation to the User model
+  
+  
+  @@map("Todo") // Map the model to the "Todo" table
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  username    String   @unique
+  email       String   @unique
+  password    String
+  bio         String?  // Optional bio field
+  profilePicture String? // Optional profile picture URL
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  todos       Todo[]   
+
+  @@map("User") // Map the model to the "User" table
+}
