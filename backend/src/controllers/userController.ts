@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "../config/prismaClient"; // Assuming you're using Prisma
-
+import { uploadAndTransformImage } from "../utils/cloudinary";
 const JWT_SECRET = "fdajkjferjkkanvcczlurions"; // Replace with a secure secret
 
 // Register a new user
@@ -15,6 +15,14 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     if (existingUser) {
       res.status(400).json({ message: "User already exists" });
       return;
+    }
+
+    // Upload the image to Cloudinary (if provided)
+    let imageUrl: string | undefined;
+    if (req.file) {
+      imageUrl = await uploadAndTransformImage(req.file.path, {
+        folder: "post_images",
+      });
     }
 
     // Hash the password
@@ -106,5 +114,41 @@ export const getUserInfo = async (req: Request, res: Response): Promise<void> =>
   } catch (err) {
     console.error("Error fetching user info:", err);
     res.status(500).json({ error: "Failed to fetch user info" });
+  }
+};
+
+
+export const updateUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.user || !req.user.id) {
+      res.status(401).json({ error: "Unauthorized: User not authenticated" });
+      return;
+    }
+
+    const { username, email, bio } = req.body;
+
+    // Upload the profile picture to Cloudinary (if provided)
+    let profilePictureUrl: string | undefined;
+    if (req.file) {
+      profilePictureUrl = await uploadAndTransformImage(req.file.path, {
+        folder: "post_images",
+      });
+    }
+
+    // Update the user in the database
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user.id },
+      data: {
+        username,
+        email,
+        bio,
+        ...(profilePictureUrl && { profilePicture: profilePictureUrl }), // Only update if a new image is uploaded
+      },
+    });
+
+    res.status(200).json({ message: "User updated successfully", user: updatedUser });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Failed to update user" });
   }
 };
