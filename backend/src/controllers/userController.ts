@@ -152,3 +152,29 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
     res.status(500).json({ error: "Failed to update user" });
   }
 };
+
+export const getOtherUsers = async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.user || !req.user.id) {
+      res.status(401).json({ error: "Unauthorized: User not authenticated" });
+      return;
+    }
+
+    const users = await prisma.user.findMany({
+      where: {
+        id: { not: req.user.id }, // Exclude the logged-in user
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        profilePicture: true,
+      },
+    });
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching other users:", error);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+};

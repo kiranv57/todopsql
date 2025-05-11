@@ -4,6 +4,7 @@ import cors from "cors";
 import todoRoutes from "./routes/todos";
 import userRoutes from "./routes/user";
 
+
 const app = express();
 app.use(express.json());
 const PORT = 5000;
