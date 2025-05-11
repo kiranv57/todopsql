@@ -3,6 +3,8 @@ import UserFeed from "./pages/UserFeed";
 import SignInPage from "./pages/signin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SignupPage from "./pages/signup";
+import ChatPage from "./components/ChatPage";
+import TodoDashboard from "./pages/TodoDashboard";
 
 function App() {
   return (
@@ -23,7 +25,16 @@ function App() {
         />
 
         {/* Default Route */}
+        
         <Route path="*" element={<Navigate to="/signin" replace />} />
+        <Route path="/" element={<UserFeed />}>
+          <Route path="/" element={<TodoDashboard />} />
+          <Route path="/chat/:friendId" element={<ChatPage />} />
+        </Route>
+
+        
+
+        
       </Routes>
     </main>
   </Router>
