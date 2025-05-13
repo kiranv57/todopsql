@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../config/prismaClient";
+import { broadcastEvent, getSocketInstance } from "../utils/socket";
 
 export const getTodos = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -40,7 +41,15 @@ export const createTodo = async (req: Request, res: Response): Promise<void> => 
         authorId: Number(req?.user?.id), // Use the authenticated user's ID as the author
       },
     });
+
+    const socket = getSocketInstance();
+    socket?.emit("todoCreated", todo); // Emit the event to the socket server
+    // Broadcast the new todo to all connected clients
+
+    // broadcastEvent("todoCreated", todo);
+
     res.status(201).json(todo);
+
   } catch (err: any) {
     console.error("Error creating todo:", err);
     res.status(500).json({ error: "Failed to create todo", details: err.message });
@@ -65,7 +74,13 @@ export const updateTodo = async (req: Request, res: Response): Promise<void> => 
       where: { id: parseInt(id, 10) },
       data: { title, description },
     });
-    res.json(updatedTodo);
+    const socket = getSocketInstance();
+    socket?.emit("todoUpdated", todo); // Emit the event to the socket server
+     // Broadcast the updated todo to all connected clients
+    //  broadcastEvent("todoUpdated", updatedTodo);
+
+     res.status(200).json(updatedTodo);
+
   } catch (err) {
     res.status(500).json({ error: "Failed to update todo" });
   }
@@ -83,10 +98,16 @@ export const deleteTodo = async (req: Request, res: Response): Promise<void> => 
       res.status(403).json({ error: "Forbidden: You do not own this todo" });
     }
 
-    await prisma.todo.delete({
+    const deletedTodo = await prisma.todo.delete({
       where: { id: parseInt(id, 10) },
     });
-    res.json({ message: "Todo deleted successfully" });
+
+    const socket = getSocketInstance();
+    socket?.emit("todoDeleted", todo); // Emit the event to the socket server
+    // Broadcast the deleted todo ID to all connected clients
+    // broadcastEvent("todoDeleted", { id: deletedTodo.id });
+
+    res.status(200).json(deletedTodo);
   } catch (err) {
     res.status(500).json({ error: "Failed to delete todo" });
   }

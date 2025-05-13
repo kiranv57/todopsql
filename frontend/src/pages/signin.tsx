@@ -21,7 +21,7 @@ const SignInPage = () => {
             // Save the JWT token to localStorage
             localStorage.setItem('token', response.data.token);
             // Redirect to the feed/dashboard page
-            navigate('/todos');
+            navigate('/');
         } catch (error: any) {
             console.error('Login failed:', error.response?.data?.message || error.message);
             alert('Invalid email or password. Please try again.');

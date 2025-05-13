@@ -11,6 +11,10 @@ interface TodoStore {
   loading: boolean;
   error: string;
   fetchTodos: () => Promise<void>;
+  addTodo: (todo: Todo) => void;
+  updateTodo: (todo: Todo) => void;
+  deleteTodo: (id: number) => void;
+  // setTodos: (todo: Todo) => void; // Action to set todos
 }
 
 export const useTodoStore = create<TodoStore>((set) => ({
@@ -45,4 +49,16 @@ export const useTodoStore = create<TodoStore>((set) => ({
       set({ error: err.message || "Failed to fetch todos.", loading: false });
     }
   },
+  // Action to set todos
+  //  setTodos: (todo: Todo) => set((state) => ({ todos: [...state.todos, todo] })),
+  addTodo: (todo) =>
+    set((state) => ({ todos: [...state.todos, todo] })),
+  updateTodo: (todo) =>
+    set((state) => ({
+      todos: state.todos.map((t) => (t.id === todo.id ? todo : t)),
+    })),
+  deleteTodo: (id) =>
+    set((state) => ({
+      todos: state.todos.filter((t) => t.id !== id),
+    })),
 }));

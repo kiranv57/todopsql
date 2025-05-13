@@ -3,7 +3,8 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import todoRoutes from "./routes/todos";
 import userRoutes from "./routes/user";
-
+import { initializeSocket } from "./utils/socket";
+import http from "http"; // Import the http module
 
 const app = express();
 app.use(express.json());
@@ -24,7 +25,12 @@ app.get("/hello", (_req, res) => {
   res.send("Welcome to the Todo API");
 });
 
+// Create an HTTP server
+const httpServer = http.createServer(app);
+
 // Start the server
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+  initializeSocket(httpServer);
+  console.log("Socket.io initialized");
 });

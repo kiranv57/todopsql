@@ -19,10 +19,10 @@ const UserProfile: React.FC = () => {
       fetchUser();
       fetchOtherUsers();
 
-     const socket = connectSocket();
-      return () => {
-      disconnectSocket();
-     };
+    //  const socket = connectSocket();
+    //   return () => {
+    //   disconnectSocket();
+    //  };
   }, []);
 
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,7 +70,7 @@ const UserProfile: React.FC = () => {
       );
 
       localStorage.removeItem("token");
-      window.location.href = "/login"; // Redirect to login page
+      window.location.href = "/signin"; // Redirect to login page
     } catch (err: any) {
       console.error("Error logging out:", err);
       setError(err.response?.data?.error || "Failed to log out.");

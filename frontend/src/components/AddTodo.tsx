@@ -1,15 +1,20 @@
-import React, { useState } from "react";
+import React, {  useState } from "react";
 import axios from "axios";
 import { Button } from "./ui/button";
+
+import { toast } from "react-toastify";
 
 interface AddTodoProps {
   onTodoAdded: () => void; // Callback to refresh the todo list after adding a new todo
 }
 
+  
 const AddTodo: React.FC<AddTodoProps> = ({ onTodoAdded }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
+
+
 
   const handleAddTodo = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -23,7 +28,7 @@ const AddTodo: React.FC<AddTodoProps> = ({ onTodoAdded }) => {
       }
 
       // Send the new todo to the backend
-      await axios.post(
+        await axios.post(
         "http://localhost:5000/api/todos/create",
         { title, description },
         {
@@ -32,11 +37,11 @@ const AddTodo: React.FC<AddTodoProps> = ({ onTodoAdded }) => {
           },
         }
       );
-
-      alert("Todo added successfully!");
+      
+      // toast.success(`${res.data.todo} added successfully!`);
       setTitle("");
       setDescription("");
-      onTodoAdded(); // Refresh the todo list
+      // onTodoAdded(); // Refresh the todo list
     } catch (err: any) {
       console.error("Error adding todo:", err);
       setError(err.response?.data?.error || "Failed to add todo.");

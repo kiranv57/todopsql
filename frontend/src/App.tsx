@@ -5,6 +5,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import SignupPage from "./pages/signup";
 import ChatPage from "./components/ChatPage";
 import TodoDashboard from "./pages/TodoDashboard";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; 
+
 
 function App() {
   return (
@@ -15,19 +18,19 @@ function App() {
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignupPage />} />
         {/* Protected Route */}
-        <Route
+        {/* <Route
           path="/feed"
           element={
             <ProtectedRoute>
               <UserFeed />
             </ProtectedRoute>
           }
-        />
+        /> */}
 
         {/* Default Route */}
         
-        <Route path="*" element={<Navigate to="/signin" replace />} />
-        <Route path="/" element={<UserFeed />}>
+        <Route path="/signin" element={<Navigate to="/signin" replace />} />
+        <Route path="/" element={<ProtectedRoute><UserFeed /></ProtectedRoute>}>
           <Route path="/" element={<TodoDashboard />} />
           <Route path="/chat/:friendId" element={<ChatPage />} />
         </Route>
@@ -36,6 +39,7 @@ function App() {
 
         
       </Routes>
+      <ToastContainer />
     </main>
   </Router>
   );

@@ -6,7 +6,8 @@ import { useTodoStore } from "@/store/todoStore";
 const TodoDashboard = () => {
 
     const { todos, error, fetchTodos } = useTodoStore(); // Access Zustand store
-    
+
+
     return (
         <div>
             <h1 className="text-center">Your Todos</h1>
