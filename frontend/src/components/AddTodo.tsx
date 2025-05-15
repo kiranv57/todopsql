@@ -1,18 +1,13 @@
 import React, {  useState } from "react";
-import axios from "axios";
+
 import { Button } from "./ui/button";
+import { useCreateTodo } from "@/hooks/todos/useCreateTodo";
 
-import { toast } from "react-toastify";
-
-interface AddTodoProps {
-  onTodoAdded: () => void; // Callback to refresh the todo list after adding a new todo
-}
-
-  
-const AddTodo: React.FC<AddTodoProps> = ({ onTodoAdded }) => {
+const AddTodo: React.FC = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
+  const { create } = useCreateTodo();  
 
 
 
@@ -21,23 +16,8 @@ const AddTodo: React.FC<AddTodoProps> = ({ onTodoAdded }) => {
     setError(""); // Clear any previous errors
 
     try {
-      const token = localStorage.getItem("token"); // Get the JWT token from localStorage
-      if (!token) {
-        setError("You must be logged in to add a todo.");
-        return;
-      }
-
-      // Send the new todo to the backend
-        await axios.post(
-        "http://localhost:5000/api/todos/create",
-        { title, description },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-          },
-        }
-      );
-      
+     
+      create({title, description});
       // toast.success(`${res.data.todo} added successfully!`);
       setTitle("");
       setDescription("");

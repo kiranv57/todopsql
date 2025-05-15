@@ -75,7 +75,7 @@ export const updateTodo = async (req: Request, res: Response): Promise<void> => 
       data: { title, description },
     });
     const socket = getSocketInstance();
-    socket?.emit("todoUpdated", todo); // Emit the event to the socket server
+    socket?.emit("todoUpdated", updatedTodo); // Emit the event to the socket server
      // Broadcast the updated todo to all connected clients
     //  broadcastEvent("todoUpdated", updatedTodo);
 
@@ -107,7 +107,7 @@ export const deleteTodo = async (req: Request, res: Response): Promise<void> => 
     // Broadcast the deleted todo ID to all connected clients
     // broadcastEvent("todoDeleted", { id: deletedTodo.id });
 
-    res.status(200).json(deletedTodo);
+    res.status(200).json({ "success": true, deletedTodo});
   } catch (err) {
     res.status(500).json({ error: "Failed to delete todo" });
   }
