@@ -6,7 +6,7 @@ import { useTodoStore } from "@/store/todoStore";
 const TodoDashboard = () => {
 
     const { error } = useTodoStore(); // Access Zustand store
-
+    const todos = useTodoStore(state => state.todos); // Access Zustand store
 
     return (
         <div>
@@ -14,7 +14,7 @@ const TodoDashboard = () => {
             {error && <p className="error">{error}</p>}
             <AddTodo />
             <div className="mt-4 w-full ">
-                <TodoList />
+                <TodoList todos={todos}/>
             </div>
         </div>
     )

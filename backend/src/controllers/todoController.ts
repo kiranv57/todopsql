@@ -14,7 +14,34 @@ export const getTodos = async (req: Request, res: Response): Promise<void> => {
 
     // Fetch todos for the authenticated user
     const todos = await prisma.todo.findMany({
-      where: { authorId: Number(req.user.id) }, // Filter by the authenticated user's ID
+      // where: { authorId: Number(req.user.id) }, // Filter by the authenticated user's ID
+    });
+
+    res.json(todos);
+    return
+  } catch (err) {
+    console.error("Error fetching todos:", err);
+    res.status(500).json({ error: "Failed to fetch todos" });
+    return
+  }
+};
+
+
+export const getTodosById = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // Ensure the user is authenticated
+    console.log("here",req.user)
+    if (!req.user || !req.user.id) {
+
+      res.status(401).json({ error: "Unauthorized: User not authenticated" });
+      return 
+    }
+
+    const { id } = req.params;
+
+    // Fetch todos for the authenticated user
+    const todos = await prisma.todo.findMany({
+      where: { authorId: Number(id) }, // Filter by the authenticated user's ID
     });
 
     res.json(todos);
@@ -42,11 +69,20 @@ export const createTodo = async (req: Request, res: Response): Promise<void> => 
       },
     });
 
+    const user = await prisma.user.findUnique({
+      where: { id: todo.authorId },
+      select: { username: true },
+    })
+
+    const newTodo = {
+      ...todo, username: user?.username
+    }
+
     const socket = getSocketInstance();
-    socket?.emit("todoCreated", todo); // Emit the event to the socket server
+    socket?.emit("todoCreated", newTodo); // Emit the event to the socket server
     // Broadcast the new todo to all connected clients
 
-    // broadcastEvent("todoCreated", todo);
+    // broadcastEvent(socket, "todoCreated", newTodo);
 
     res.status(201).json(todo);
 
@@ -76,7 +112,7 @@ export const updateTodo = async (req: Request, res: Response): Promise<void> => 
     });
     const socket = getSocketInstance();
     socket?.emit("todoUpdated", updatedTodo); // Emit the event to the socket server
-     // Broadcast the updated todo to all connected clients
+     // Broadcast the updated todo to a ll connected clients
     //  broadcastEvent("todoUpdated", updatedTodo);
 
      res.status(200).json(updatedTodo);

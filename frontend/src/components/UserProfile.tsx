@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaCamera } from "react-icons/fa";
-import { connectSocket, disconnectSocket } from "../utils/socket";
+
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import { useUserStore } from "@/store/userStore";
@@ -9,7 +9,8 @@ import { useUserStore } from "@/store/userStore";
 
 
 const UserProfile: React.FC = () => {
-  const { user, otherUsers, setUser, fetchUser, fetchOtherUsers } = useUserStore();
+  const { otherUsers, setUser, fetchUser, fetchOtherUsers } = useUserStore();
+  const user = useUserStore((state) => state.user); // Access user from Zustand store
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
   const navigate = useNavigate(); // Initialize useNavigate

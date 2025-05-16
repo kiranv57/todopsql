@@ -21,6 +21,12 @@ export const initializeSocket = (httpServer: HttpServer) => {
       console.log(`Client disconnected: ${socket.id}`);
       activeConnections.delete(socket.id); // Remove the connection from the set
     });
+
+    socket.on("todoCreated", (todo) => {
+      console.log("Todo created:", todo);
+      socket.broadcast.emit("todoCreated", todo); // Broadcast the event to all other clients
+    }
+    );
   });
 
   return io;
@@ -34,11 +40,12 @@ export const getSocketInstance = (): Server | null => {
 };
 
 // Utility function to broadcast events
-export const broadcastEvent = (event: string, data: any) => {
+export const broadcastEvent = (socket:any, event: string, data: any) => {
   if (!io) {
     throw new Error("Socket.io not initialized. Call initializeSocket first.");
   }
   io.emit(event, data); // Emit the event to all connected clients
+  
 };
 
 // Utility to get active connections

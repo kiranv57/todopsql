@@ -12,9 +12,14 @@ type editProps = {
   isEdit: boolean;
 }
 
-const TodoList: React.FC = () => {
+type TodoListProps = {
+  todos: Todo[];
+};
+
+const TodoList: React.FC<TodoListProps> = ({todos}) => {
   const { remove } = useDeleteTodo();
-  const { todos, addTodo, updateTodo, deleteTodo } = useTodoStore();
+  const {  addTodo, updateTodo, deleteTodo } = useTodoStore();
+  // const  todos  = useTodoStore(state => state.todos); // Access Zustand store
   const [edit, setEdit] = React.useState<editProps | null>(null);
   const [edittitle, setEditTitle] = React.useState("");
   const [editdescription, setEditDescription] = React.useState("");
@@ -32,7 +37,8 @@ const TodoList: React.FC = () => {
   };
 
   const handleEdit = async (id: number) => {
-    setEdit({ id: id, isEdit: true ? false : true });
+    setEdit(prev => ({ id, isEdit: !(prev?.isEdit && prev.id === id) }));
+
     const editTodo = todos.find((todo) => todo.id === id);
     if (editTodo) {
       setEditTitle(editTodo.title);
@@ -66,8 +72,10 @@ const TodoList: React.FC = () => {
 
     // Listen for todoCreated event
     socket.on("todoCreated", (todo) => {
+      console.log("Todo created:", todo);
       addTodo(todo);
       toast.success(`Todo created now: ${todo.title}`);
+      toast.success(`${todo.username} added todo: ${todo.title}`);
     });
 
     // Listen for todoUpdated event
@@ -91,9 +99,10 @@ const TodoList: React.FC = () => {
       disconnectSocket(); // Disconnect the socket
     };
   }, []);
+  
 
   return (
-    console.log(todos),
+    console.log('here',todos),
     <div className="w-full bg-white p-4 rounded shadow">
       <h2 className="text-2xl font-bold mb-4 text-center">Your Todos</h2>
       <ul>
